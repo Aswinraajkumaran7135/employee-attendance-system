@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Inside client/src/features/auth/authService.js
-const API_URL = 'https://YOUR-ACTUAL-RENDER-DOMAIN.onrender.com/api/auth/';
+// Change the API_URL to your actual live Render domain
+const API_URL = 'https://employee-attendance-system-pium.onrender.com/api/auth/';
 
 // Register user
 const register = async (userData) => {
