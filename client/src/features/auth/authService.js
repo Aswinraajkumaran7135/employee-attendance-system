@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://YOUR-RENDER-API-URL.onrender.com/api/auth/';
+// Inside client/src/features/auth/authService.js
+const API_URL = 'https://YOUR-ACTUAL-RENDER-DOMAIN.onrender.com/api/auth/';
 
 // Register user
 const register = async (userData) => {
