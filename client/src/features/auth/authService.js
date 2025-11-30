@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-// Change the API_URL to your actual live Render domain
+
+
+// Replace the existing line with this full, complete address:
 const API_URL = 'https://employee-attendance-system-pium.onrender.com/api/auth/';
 
 // Register user
