@@ -1,9 +1,11 @@
 import axios from 'axios';
 
+// Get the API URL from the Vite environment file
+// Note: import.meta.env.VITE_API_BASE_URL reads from the .env file
+const API_URL = import.meta.env.VITE_API_BASE_URL + 'auth/'; 
 
-
-// Replace the existing line with this full, complete address:
-const API_URL = 'https://employee-attendance-system-pium.onrender.com/api/auth/';
+// Register user
+// ... rest of your service code remains the same ...
 
 // Register user
 const register = async (userData) => {
