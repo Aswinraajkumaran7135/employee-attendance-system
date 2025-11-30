@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { FaHistory, FaCalendarCheck, FaClock, FaExclamationTriangle } from 'react-icons/fa';
+import api from '../api'; // ✅ use API instance
 
 function MyHistory() {
   const [history, setHistory] = useState([]);
@@ -12,13 +12,19 @@ function MyHistory() {
       try {
         const token = user.token;
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await axios.get('/api/attendance/my-history', config);
+
+        // ✅ Correct backend path (no /api here)
+        const response = await api.get('/attendance/my-history', config);
+
         setHistory(response.data);
       } catch (error) {
         console.error('Error fetching history:', error);
       }
     };
-    fetchHistory();
+
+    if (user) {
+      fetchHistory();
+    }
   }, [user]);
 
   // Calculate Personal Stats
@@ -38,7 +44,7 @@ function MyHistory() {
 
   // --- STYLES ---
   const headerStyle = {
-    background: 'linear-gradient(135deg, #0d9488 0%, #115e59 100%)', // Teal Gradient
+    background: 'linear-gradient(135deg, #0d9488 0%, #115e59 100%)',
     color: 'white',
     padding: '30px',
     borderRadius: '12px',
@@ -69,7 +75,7 @@ function MyHistory() {
   return (
     <div className='container'>
       
-      {/* 1. Header */}
+      {/* Header */}
       <div style={headerStyle}>
         <div style={{ background: 'rgba(255,255,255,0.2)', padding: '15px', borderRadius: '50%' }}>
           <FaHistory size={30} color="white" />
@@ -80,24 +86,32 @@ function MyHistory() {
         </div>
       </div>
 
-      {/* 2. Personal Stats */}
+      {/* Personal Stats */}
       <div style={statsGrid}>
         <div style={statCard}>
-          <div style={{ background: '#e0f2fe', padding: '12px', borderRadius: '50%', color: '#0284c7' }}><FaCalendarCheck size={20} /></div>
+          <div style={{ background: '#e0f2fe', padding: '12px', borderRadius: '50%', color: '#0284c7' }}>
+            <FaCalendarCheck size={20} />
+          </div>
           <div>
             <div style={{ fontSize: '0.9rem', color: '#64748b' }}>Total Days</div>
             <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{totalDays}</div>
           </div>
         </div>
+
         <div style={statCard}>
-          <div style={{ background: '#dcfce7', padding: '12px', borderRadius: '50%', color: '#16a34a' }}><FaClock size={20} /></div>
+          <div style={{ background: '#dcfce7', padding: '12px', borderRadius: '50%', color: '#16a34a' }}>
+            <FaClock size={20} />
+          </div>
           <div>
             <div style={{ fontSize: '0.9rem', color: '#64748b' }}>On Time</div>
             <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{onTimeCount}</div>
           </div>
         </div>
+
         <div style={statCard}>
-          <div style={{ background: '#fef3c7', padding: '12px', borderRadius: '50%', color: '#d97706' }}><FaExclamationTriangle size={20} /></div>
+          <div style={{ background: '#fef3c7', padding: '12px', borderRadius: '50%', color: '#d97706' }}>
+            <FaExclamationTriangle size={20} />
+          </div>
           <div>
             <div style={{ fontSize: '0.9rem', color: '#64748b' }}>Late Arrivals</div>
             <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{lateCount}</div>
@@ -105,7 +119,7 @@ function MyHistory() {
         </div>
       </div>
 
-      {/* 3. History Table */}
+      {/* History Table */}
       <div className="card" style={{ padding: '0', overflow: 'hidden' }}>
         <table style={{ width: '100%' }}>
           <thead>
