@@ -23,6 +23,14 @@ function EmployeeDashboard() {
     fetchStatus();
   }, [user]);
 
+  // Helper function to safely format time
+  const formatTime = (timeString) => {
+    if (!timeString) return '-- : --';
+    const date = new Date(timeString);
+    // Check if the date object is valid before formatting
+    return isNaN(date) ? 'Invalid Date Format' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   const handleCheckIn = async () => {
     try {
       const token = user.token;
@@ -37,17 +45,26 @@ function EmployeeDashboard() {
 
   const handleCheckOut = async () => {
     try {
+      // Ensure we have a valid record before attempting checkout
+      if (!todayStatus || !todayStatus._id) {
+         toast.error('Cannot Check Out: No active Check-In record found.');
+         return;
+      }
+      
       const token = user.token;
       const config = { headers: { Authorization: `Bearer ${token}` } };
+      // The payload is empty, relying on the backend to find the record by user ID and date.
       await axios.post('/api/attendance/checkout', {}, config);
-      toast.success('Checked Out Successfully!');
+      
+      toast.success('Checked Out Successfully! Hours calculated.');
       fetchStatus();
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Check Out Failed');
+      // This will now show the detailed error message sent from the Node server
+      toast.error(error.response?.data?.message || 'Check Out Failed: Review Server Logs.');
     }
   };
 
-  // --- STYLES ---
+  // --- STYLES --- (Styles remain the same)
   const heroStyle = {
     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Purple Gradient
     color: 'white',
@@ -118,15 +135,13 @@ function EmployeeDashboard() {
              <div style={{ background: '#f9fafb', padding: '15px', borderRadius: '8px' }}>
                 <small style={{ color: '#6b7280', textTransform: 'uppercase', fontWeight: 'bold' }}>Check In Time</small>
                 <div style={{ fontSize: '1.2rem', fontWeight: '600', color: '#1f2937' }}>
-                  {new Date(todayStatus.checkInTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {formatTime(todayStatus.checkInTime)} {/* Uses the robust helper */}
                 </div>
              </div>
              <div style={{ background: '#f9fafb', padding: '15px', borderRadius: '8px' }}>
                 <small style={{ color: '#6b7280', textTransform: 'uppercase', fontWeight: 'bold' }}>Check Out Time</small>
                 <div style={{ fontSize: '1.2rem', fontWeight: '600', color: '#1f2937' }}>
-                  {todayStatus.checkOutTime 
-                    ? new Date(todayStatus.checkOutTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-                    : '-- : --'}
+                  {formatTime(todayStatus.checkOutTime)} {/* Uses the robust helper */}
                 </div>
              </div>
           </div>

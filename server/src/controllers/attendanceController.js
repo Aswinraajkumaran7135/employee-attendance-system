@@ -1,6 +1,7 @@
 const Attendance = require('../models/Attendance');
+const User = require('../models/User'); // <-- FIX: Import User model for clarity and future role checks
 
-// Helper to get today's date in YYYY-MM-DD format
+// Helper to get today's date in YYYY-MM-DD format (for finding/creating records)
 const getTodayDate = () => new Date().toISOString().split('T')[0];
 
 // @desc    Check In (Start work)
@@ -27,7 +28,7 @@ const checkIn = async (req, res) => {
 
     res.status(201).json({ message: 'Checked in successfully', attendance });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    res.status(500).json({ message: 'Server Error during Check In', error: error.message });
   }
 };
 
@@ -38,11 +39,11 @@ const checkOut = async (req, res) => {
   const today = getTodayDate();
 
   try {
-    // 1. Find today's record
+    // 1. Find today's active record
     const attendance = await Attendance.findOne({ userId, date: today });
 
     if (!attendance) {
-      return res.status(400).json({ message: 'You have not checked in today.' });
+      return res.status(400).json({ message: 'You have not checked in today. Cannot check out.' });
     }
 
     if (attendance.checkOutTime) {
@@ -53,15 +54,16 @@ const checkOut = async (req, res) => {
     attendance.checkOutTime = new Date();
 
     // 3. Calculate total hours worked
-    const milliseconds = attendance.checkOutTime - attendance.checkInTime;
+    // FIX: Use .getTime() explicitly for robust calculation across all environments
+    const milliseconds = attendance.checkOutTime.getTime() - attendance.checkInTime.getTime();
     const hours = milliseconds / (1000 * 60 * 60); // Convert ms to hours
     attendance.totalHours = hours.toFixed(2); // Keep 2 decimal places
 
     await attendance.save();
 
-    res.status(200).json({ message: 'Checked out successfully', attendance });
+    res.status(200).json({ message: 'Checked out successfully. Hours calculated.', attendance });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    res.status(500).json({ message: 'Server Error during Check Out', error: error.message });
   }
 };
 
@@ -88,18 +90,18 @@ const getTodayStatus = async (req, res) => {
   }
 };
 
-// @desc    Get ALL attendance records (Manager only)
+// @desc    Get ALL attendance records (Manager only view)
 // @route   GET /api/attendance/all
 const getAllAttendance = async (req, res) => {
   try {
-    // .populate() grabs the Name and Email from the User table using the ID
+    // .populate() pulls in the name/email/department from the related User ID
     const attendance = await Attendance.find()
       .populate('userId', 'name email department')
       .sort({ date: -1 });
       
     res.status(200).json(attendance);
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error: error.message });
+    res.status(500).json({ message: 'Server Error during Manager View', error: error.message });
   }
 };
 
