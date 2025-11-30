@@ -1,4 +1,12 @@
 {
+  "name": "employee-attendance-backend",
+  "version": "1.0.0",
+  "main": "src/app.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
