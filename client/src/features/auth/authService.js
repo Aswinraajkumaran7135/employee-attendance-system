@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// Get the API URL from the Vite environment file
-// Note: import.meta.env.VITE_API_BASE_URL reads from the .env file
-const API_URL = import.meta.env.VITE_API_BASE_URL + 'auth/'; 
+// Inside client/src/features/auth/authService.js
+const API_URL = 'https://employee-attendance-system-3.onrender.com/api/auth/';
 
 // Register user
 // ... rest of your service code remains the same ...
